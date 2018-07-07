@@ -1,0 +1,21 @@
+{
+  "name": "zox-graphgql-ws",
+  "version": "1.0.0",
+  "description": "Frontend WeSocket interface for Zox.js GraphQL endpoint",
+  "author": "Zoran Ravic <contact@zoranravic.com> (zoranravic.com)",
+  "license": "MIT",
+  "repository": "zoxjs/zox-graphgql-ws",
+  "homepage": "http://zoxjs.github.io/docs/graphql-web-socket",
+  "main": "GraphQLWebSocket.js",
+  "files": [
+    "LICENSE",
+    "Readme.md",
+    "**/*.js",
+    "**/*.d.ts"
+  ],
+  "keywords": [
+    "graphql",
+    "websocket",
+    "ws"
+  ]
+}
