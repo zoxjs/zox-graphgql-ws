@@ -18,5 +18,8 @@
     "graphql",
     "websocket",
     "ws"
-  ]
+  ],
+  "scripts": {
+    "prepublishOnly": "tsc"
+  }
 }
