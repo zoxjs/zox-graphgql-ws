@@ -30,7 +30,7 @@ const event = gql.queryAsync({id:'query-id'});
 ### Options:
 
 ```yaml
-raw: Send raw GraphQL Query
+query: Send raw GraphQL Query
 id: Execute a predefined Query by it's ID
 op: Operation name - used when the Query contains multiple operations
 vars: Variables

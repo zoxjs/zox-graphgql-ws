@@ -1,15 +1,34 @@
 import {WebSocketEx} from "./WebSocketEx";
 
-export type RequestOptions = {
-    raw?: string
+type GenericVars = {[key:string]: any}
+
+export type RequestOptions<T = GenericVars> = {
+    query?: string
     id?: string
     op?: string
-    vars?: any
+    vars?: T
+}
+
+export type RequestOptionsExact<T = GenericVars> = (
+    {query: string} |
+    {id: string}
+    ) & {
+    op?: string
+    vars?: T
+}
+
+export type GraphQLError = {
+    message: string
+    locations?: Array<{
+        line: number
+        column: number
+    }>
+    path?: Array<string>
 }
 
 export type GraphQLMessage = {
     data?: any
-    errors?: Array<any>
+    errors?: Array<GraphQLError>
 }
 export type MessageHandler = (message: GraphQLMessage) => void
 export type DisconnectHandler = (e: CloseEvent) => void
@@ -52,7 +71,7 @@ export class GraphQLWebSocket
                 }
                 else
                 {
-                    this.ws.send(JSON.stringify({ type: 'sub', query: sub.args.raw, id: sub.id }));
+                    this.ws.send(JSON.stringify({ type: 'sub', query: sub.args.query, id: sub.id }));
                 }
             }
         });
@@ -140,14 +159,18 @@ export class GraphQLWebSocket
         }
     }
 
-    public subscribe(args: RequestOptions, handler: MessageHandler, onDisconnected?: DisconnectHandler): number | void
+    public subscribe<T = GenericVars>(
+        args: RequestOptionsExact<T>,
+        handler: MessageHandler,
+        onDisconnected?: DisconnectHandler
+    ): number | void
     {
-        if (typeof args.id === 'string')
+        if (typeof (args as RequestOptions).id === 'string')
         {
             const id = this.next++;
             this.ws.sendJson({
                 type: 'subId',
-                query: args.id,
+                query: (args as RequestOptions).id,
                 operation: args.op,
                 variables: args.vars,
                 id
@@ -155,12 +178,12 @@ export class GraphQLWebSocket
             this.subs.push({ id, handler, args, onDisconnected });
             return id;
         }
-        else if (typeof args.raw === 'string')
+        else if (typeof (args as RequestOptions).query === 'string')
         {
             const id = this.next++;
             this.ws.sendJson({
                 type: 'sub',
-                query: args.raw,
+                query: (args as RequestOptions).query,
                 operation: args.op,
                 variables: args.vars,
                 id
@@ -193,26 +216,30 @@ export class GraphQLWebSocket
         }
     }
 
-    public query(args: RequestOptions, handler: MessageHandler, onDisconnected?: DisconnectHandler): void
+    public query<T = GenericVars>(
+        args: RequestOptionsExact<T>,
+        handler: MessageHandler,
+        onDisconnected?: DisconnectHandler
+    ): void
     {
-        if (typeof args.id === 'string')
+        if (typeof (args as RequestOptions).id === 'string')
         {
             const id = this.next++;
             this.ws.sendJson({
                 type: 'queryId',
-                query: args.id,
+                query: (args as RequestOptions).id,
                 operation: args.op,
                 variables: args.vars,
                 id
             });
             this.queries.push({ id, handler, args, onDisconnected });
         }
-        else if (typeof args.raw === 'string')
+        else if (typeof (args as RequestOptions).query === 'string')
         {
             const id = this.next++;
             this.ws.sendJson({
                 type: 'query',
-                query: args.raw,
+                query: (args as RequestOptions).query,
                 operation: args.op,
                 variables: args.vars,
                 id
@@ -225,7 +252,7 @@ export class GraphQLWebSocket
         }
     }
 
-    public queryAsync(args: RequestOptions): Promise<any>
+    public queryAsync(args: RequestOptionsExact): Promise<any>
     {
         return new Promise<any>((resolve, reject) =>
         {
