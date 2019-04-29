@@ -1,6 +1,6 @@
 {
   "name": "zox-graphql-ws",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Frontend WeSocket interface for Zox.js GraphQL endpoint",
   "author": "Zoran Ravic <contact@zoranravic.com> (zoranravic.com)",
   "license": "MIT",
