@@ -1,6 +1,6 @@
 import {WebSocketEx} from "./WebSocketEx";
 
-type GenericVars = {[key:string]: any}
+export type GenericVars = {[key:string]: any}
 
 export type RequestOptions<T = GenericVars> = {
     query?: string
@@ -26,11 +26,11 @@ export type GraphQLError = {
     path?: Array<string>
 }
 
-export type GraphQLMessage = {
-    data?: any
+export type GraphQLMessage<T = any> = {
+    data?: T
     errors?: Array<GraphQLError>
 }
-export type MessageHandler = (message: GraphQLMessage) => void
+export type MessageHandler<T = any> = (message: GraphQLMessage<T>) => void
 export type DisconnectHandler = (e: CloseEvent) => void
 
 type ActiveOperation = {
@@ -159,9 +159,9 @@ export class GraphQLWebSocket
         }
     }
 
-    public subscribe<T = GenericVars>(
-        args: RequestOptionsExact<T>,
-        handler: MessageHandler,
+    public subscribe<TVars = GenericVars, TData = any>(
+        args: RequestOptionsExact<TVars>,
+        handler: MessageHandler<TData>,
         onDisconnected?: DisconnectHandler
     ): number | void
     {
@@ -216,9 +216,9 @@ export class GraphQLWebSocket
         }
     }
 
-    public query<T = GenericVars>(
-        args: RequestOptionsExact<T>,
-        handler: MessageHandler,
+    public query<TVars = GenericVars, TData = any>(
+        args: RequestOptionsExact<TVars>,
+        handler: MessageHandler<TData>,
         onDisconnected?: DisconnectHandler
     ): void
     {
@@ -252,7 +252,7 @@ export class GraphQLWebSocket
         }
     }
 
-    public queryAsync(args: RequestOptionsExact): Promise<any>
+    public queryAsync<TVars = GenericVars, TData = any>(args: RequestOptionsExact<TVars>): Promise<GraphQLMessage<TData>>
     {
         return new Promise<any>((resolve, reject) =>
         {
